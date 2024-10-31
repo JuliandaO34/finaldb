@@ -1,0 +1,15 @@
+fastapi[standard]
+uvicorn
+
+requests
+mysql-connector-python
+python-dotenv
+
+pandas
+xlrd
+openpyxl
+
+streamlit
+watchdog
+
+pydantic
