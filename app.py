@@ -1,6 +1,17 @@
 import streamlit as st
 import pandas as pd
 import requests
+import mysql.connector
+import os
+
+# Función para establecer conexión con la base de datos
+def get_db_connection():
+    return mysql.connector.connect(
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
+    )
 
 # Función para cargar y procesar el archivo Excel
 def cargar_excel():
@@ -25,13 +36,16 @@ def cargar_excel():
                     # Lógica de inserción basada en el nombre de la hoja
                     if hoja == "actores":
                         response = requests.post("http://127.0.0.1:8000/actores/", json=row.to_dict())
+                    elif hoja == "teatros":
+                        response = requests.post("http://127.0.0.1:8000/teatros/", json=row.to_dict())
                     elif hoja == "funciones":
                         response = requests.post("http://127.0.0.1:8000/funciones/", json=row.to_dict())
+                    elif hoja == "roles":
+                        response = requests.post("http://127.0.0.1:8000/roles/", json=row.to_dict())
                     elif hoja == "entradas":
                         response = requests.post("http://127.0.0.1:8000/entradas/", json=row.to_dict())
                     elif hoja == "asistencias":
                         response = requests.post("http://127.0.0.1:8000/asistencias/", json=row.to_dict())
-                    # Añadir más casos según sea necesario
                     
                 st.success(f"Datos de {hoja} insertados exitosamente.")
 
@@ -53,6 +67,24 @@ def insertar_actor():
         else:
             st.error("Error al agregar el actor.")
 
+# Función para insertar un teatro
+def insertar_teatro():
+    st.header("Insertar Teatro")
+    nombre = st.text_input("Nombre del Teatro")
+    direccion = st.text_input("Dirección")
+    ciudad = st.text_input("Ciudad")
+    
+    if st.button("Agregar Teatro"):
+        response = requests.post("http://127.0.0.1:8000/teatros/", json={
+            "nombre": nombre,
+            "direccion": direccion,
+            "ciudad": ciudad
+        })
+        if response.status_code == 200:
+            st.success("Teatro agregado exitosamente.")
+        else:
+            st.error("Error al agregar el teatro.")
+
 # Función para insertar una función
 def insertar_funcion():
     st.header("Insertar Función")
@@ -72,6 +104,20 @@ def insertar_funcion():
             st.success("Función agregada exitosamente.")
         else:
             st.error("Error al agregar la función.")
+
+# Función para insertar un rol
+def insertar_rol():
+    st.header("Insertar Rol")
+    nombre = st.text_input("Nombre del Rol")
+    
+    if st.button("Agregar Rol"):
+        response = requests.post("http://127.0.0.1:8000/roles/", json={
+            "nombre": nombre
+        })
+        if response.status_code == 200:
+            st.success("Rol agregado exitosamente.")
+        else:
+            st.error("Error al agregar el rol.")
 
 # Función para insertar una entrada
 def insertar_entrada():
@@ -116,8 +162,9 @@ def mostrar_asistencias():
 # Función principal de la aplicación
 def main():
     st.sidebar.title("Navegación")
-    options = st.sidebar.radio("Selecciona una tabla", ("Inicio", "Actores", "Funciones", "Entradas", "Asistencias"))
-
+    options = st.sidebar.radio("Selecciona una tabla", 
+        ("Inicio", "Actores", "Teatros", "Funciones", "Roles", "Entradas", "Asistencias"))
+    
     if options == "Inicio":
         st.title("Gestión de Teatro")
         st.write("Bienvenido a la gestión de teatro. Selecciona una opción en la barra lateral para comenzar.")
@@ -125,10 +172,16 @@ def main():
     
     elif options == "Actores":
         insertar_actor()
-
+    
+    elif options == "Teatros":
+        insertar_teatro()
+    
     elif options == "Funciones":
         insertar_funcion()
         mostrar_funciones()
+
+    elif options == "Roles":
+        insertar_rol()
 
     elif options == "Entradas":
         insertar_entrada()
