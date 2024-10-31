@@ -20,3 +20,10 @@ if st.button("Ver Actores"):
         st.write(actor)
 
 # Repetir para teatros, funciones, entradas y asistencias...
+
+# Consultar actores
+st.header("Lista de Actores")
+if st.button("Ver Actores"):
+    response = requests.get("http://127.0.0.1:8000/actores/")
+    for actor in response.json():
+        st.write(actor)
