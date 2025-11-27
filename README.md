@@ -42,7 +42,7 @@ Permite:
 
 ---
 
-## 🗄️ Base de datos (MySQL)
+##  Base de datos (MySQL)
 
 El proyecto utiliza una base de datos relacional con las siguientes tablas:
 
